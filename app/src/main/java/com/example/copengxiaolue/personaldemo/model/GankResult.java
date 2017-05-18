@@ -20,11 +20,11 @@ public class GankResult {
     }
 
     public static class ResultBean {
-        public String id;
-        public String creatAt;
+        public String _id;
+        public String createdAt;
         public String desc;
         public List<String> images;
-        public String publishAt;
+        public String publishedAt;
         public String source;
         public String type;
         public String url;

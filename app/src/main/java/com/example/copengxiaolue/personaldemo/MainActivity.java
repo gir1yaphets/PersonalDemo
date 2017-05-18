@@ -5,9 +5,11 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.widget.ImageView;
+import android.widget.Toast;
 
+import com.example.copengxiaolue.personaldemo.adapter.CommonRecyclerAdapter;
 import com.example.copengxiaolue.personaldemo.model.GankResult;
-import com.example.copengxiaolue.personaldemo.module.CategoryAdapter;
+import com.example.copengxiaolue.personaldemo.module.CategoryRecyclerAdapter;
 import com.example.copengxiaolue.personaldemo.net.NetWork;
 
 import java.util.List;
@@ -22,7 +24,7 @@ public class MainActivity extends AppCompatActivity {
 
     private ImageView mImageView;
     private RecyclerView mRecyclerView;
-    private CategoryAdapter mAdapter;
+    private CategoryRecyclerAdapter mAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -34,7 +36,13 @@ public class MainActivity extends AppCompatActivity {
     private void initView() {
         mRecyclerView = (RecyclerView) findViewById(R.id.recyclerView);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(this));
-        mAdapter = new CategoryAdapter(this,null);
+        mAdapter = new CategoryRecyclerAdapter(this, null);
+        mAdapter.setOnItemViewClickListener(new CommonRecyclerAdapter.OnItemViewClickListener() {
+            @Override
+            public void onItemClick(int position) {
+                Toast.makeText(MainActivity.this, "position = " + position, Toast.LENGTH_SHORT).show();
+            }
+        });
         mRecyclerView.setAdapter(mAdapter);
 
 //        mImageView = (ImageView) findViewById(R.id.imageView);
@@ -71,11 +79,5 @@ public class MainActivity extends AppCompatActivity {
 
                     }
                 });
-
-
-    }
-
-    private void initData() {
-
     }
 }
