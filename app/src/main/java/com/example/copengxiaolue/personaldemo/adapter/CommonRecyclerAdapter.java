@@ -15,7 +15,7 @@ import java.util.List;
 
 public abstract class CommonRecyclerAdapter<T> extends RecyclerView.Adapter<CommonRecyclerHolder> {
 
-    private List<T> mData;
+    protected List<T> mData;
     protected Context mContext;
     private OnItemViewClickListener mListener;
 

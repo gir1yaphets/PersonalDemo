@@ -9,8 +9,10 @@ import android.widget.Toast;
 
 import com.example.copengxiaolue.personaldemo.adapter.CommonRecyclerAdapter;
 import com.example.copengxiaolue.personaldemo.model.GankResult;
+import com.example.copengxiaolue.personaldemo.module.CategoryHeaderFooterAdapter;
 import com.example.copengxiaolue.personaldemo.module.CategoryRecyclerAdapter;
 import com.example.copengxiaolue.personaldemo.net.NetWork;
+import com.example.copengxiaolue.personaldemo.util.recyclerView.HeaderFooterRecyclerAdapter;
 
 import java.util.List;
 
@@ -25,6 +27,7 @@ public class MainActivity extends AppCompatActivity {
     private ImageView mImageView;
     private RecyclerView mRecyclerView;
     private CategoryRecyclerAdapter mAdapter;
+    private HeaderFooterRecyclerAdapter mHeaderFooterAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -43,7 +46,8 @@ public class MainActivity extends AppCompatActivity {
                 Toast.makeText(MainActivity.this, "position = " + position, Toast.LENGTH_SHORT).show();
             }
         });
-        mRecyclerView.setAdapter(mAdapter);
+        mHeaderFooterAdapter = new CategoryHeaderFooterAdapter(this, null);
+        mRecyclerView.setAdapter(mHeaderFooterAdapter);
 
 //        mImageView = (ImageView) findViewById(R.id.imageView);
 //        Glide.with(this)
@@ -65,7 +69,7 @@ public class MainActivity extends AppCompatActivity {
                     public void onNext(@NonNull GankResult gankResult) {
                         if (!gankResult.isError()) {
                             List<GankResult.ResultBean> data = gankResult.getResults();
-                            mAdapter.setData(data);
+                            mHeaderFooterAdapter.setData(data);
                         }
                     }
 
