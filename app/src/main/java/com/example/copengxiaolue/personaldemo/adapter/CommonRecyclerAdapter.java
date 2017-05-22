@@ -59,6 +59,11 @@ public abstract class CommonRecyclerAdapter<T> extends RecyclerView.Adapter<Comm
         notifyDataSetChanged();
     }
 
+    public void addData(List<T> data) {
+        mData.addAll(data);
+        notifyDataSetChanged();
+    }
+
     protected abstract @LayoutRes int getLayoutResId();
 
     protected abstract void convertView(CommonRecyclerHolder holder, T data);

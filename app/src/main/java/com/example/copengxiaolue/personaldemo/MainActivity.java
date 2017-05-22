@@ -13,6 +13,7 @@ import com.example.copengxiaolue.personaldemo.module.CategoryHeaderFooterAdapter
 import com.example.copengxiaolue.personaldemo.module.CategoryRecyclerAdapter;
 import com.example.copengxiaolue.personaldemo.net.NetWork;
 import com.example.copengxiaolue.personaldemo.util.recyclerView.HeaderFooterRecyclerAdapter;
+import com.example.copengxiaolue.personaldemo.util.recyclerView.RecyclerViewWrapperHeaderFooter;
 
 import java.util.List;
 
@@ -26,8 +27,11 @@ public class MainActivity extends AppCompatActivity {
 
     private ImageView mImageView;
     private RecyclerView mRecyclerView;
+    private RecyclerViewWrapperHeaderFooter mWrapperRecyclerView;
     private CategoryRecyclerAdapter mAdapter;
     private HeaderFooterRecyclerAdapter mHeaderFooterAdapter;
+
+    private int mCurrentPage = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -37,8 +41,8 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void initView() {
-        mRecyclerView = (RecyclerView) findViewById(R.id.recyclerView);
-        mRecyclerView.setLayoutManager(new LinearLayoutManager(this));
+//        mRecyclerView = (RecyclerView) findViewById(R.id.recyclerView);
+//        mRecyclerView.setLayoutManager(new LinearLayoutManager(this));
         mAdapter = new CategoryRecyclerAdapter(this, null);
         mAdapter.setOnItemViewClickListener(new CommonRecyclerAdapter.OnItemViewClickListener() {
             @Override
@@ -47,7 +51,51 @@ public class MainActivity extends AppCompatActivity {
             }
         });
         mHeaderFooterAdapter = new CategoryHeaderFooterAdapter(this, null);
-        mRecyclerView.setAdapter(mHeaderFooterAdapter);
+//        mRecyclerView.setAdapter(mHeaderFooterAdapter);
+
+
+        mWrapperRecyclerView = (RecyclerViewWrapperHeaderFooter) findViewById(R.id.recyclerView);
+        mWrapperRecyclerView.setLayoutManager(new LinearLayoutManager(this));
+        mWrapperRecyclerView.setAdapter(mHeaderFooterAdapter);
+        mWrapperRecyclerView.setOnRefreshListener(new RecyclerViewWrapperHeaderFooter.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+
+            }
+
+            @Override
+            public void onLoadMore() {
+                NetWork.getGankApi().getGankResult("Android", 10, mCurrentPage)
+                        .subscribeOn(Schedulers.io())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe(new Observer<GankResult>() {
+                            @Override
+                            public void onSubscribe(@NonNull Disposable d) {
+
+                            }
+
+                            @Override
+                            public void onNext(@NonNull GankResult gankResult) {
+                                if (!gankResult.isError()) {
+                                    List<GankResult.ResultBean> data = gankResult.getResults();
+                                    mHeaderFooterAdapter.addData(data);
+                                    mWrapperRecyclerView.loadFinish();
+                                    mCurrentPage += 1;
+                                }
+                            }
+
+                            @Override
+                            public void onError(@NonNull Throwable e) {
+
+                            }
+
+                            @Override
+                            public void onComplete() {
+
+                            }
+                        });
+            }
+        });
 
 //        mImageView = (ImageView) findViewById(R.id.imageView);
 //        Glide.with(this)
@@ -56,7 +104,7 @@ public class MainActivity extends AppCompatActivity {
 //                .error(R.drawable.img_transition_default)
 //                .into(mImageView);
 
-        NetWork.getGankApi().getGankResult("Android", 10, 1)
+        NetWork.getGankApi().getGankResult("Android", 10, mCurrentPage)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Observer<GankResult>() {
@@ -70,6 +118,7 @@ public class MainActivity extends AppCompatActivity {
                         if (!gankResult.isError()) {
                             List<GankResult.ResultBean> data = gankResult.getResults();
                             mHeaderFooterAdapter.setData(data);
+                            mCurrentPage += 1;
                         }
                     }
 

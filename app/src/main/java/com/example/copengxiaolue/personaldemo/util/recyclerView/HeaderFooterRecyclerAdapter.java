@@ -18,6 +18,7 @@ public abstract class HeaderFooterRecyclerAdapter<T> extends CommonRecyclerAdapt
     private static final int FOOTER_TYPE = 0x1101;
     private HeaderView mHeaderView;
     private FooterView mFooterView;
+    private static final String TAG = "HeaderFooterRecyclerAda";
 
     public HeaderFooterRecyclerAdapter(Context mContext, List<T> mData) {
         super(mContext, mData);
@@ -37,9 +38,11 @@ public abstract class HeaderFooterRecyclerAdapter<T> extends CommonRecyclerAdapt
     @Override
     public CommonRecyclerHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         if (viewType == HEADER_TYPE) {
-            return new HeaderViewHolder(mHeaderView == null ? new DefaultHeaderView(mContext) : mHeaderView);
+            mHeaderView = mHeaderView == null ?  new DefaultHeaderView(mContext) : mHeaderView;
+            return new HeaderViewHolder(mHeaderView);
         } else if (viewType == FOOTER_TYPE) {
-            return new FooterViewHolder(mHeaderView == null ? new DefaultFooterView(mContext) : mFooterView);
+            mFooterView = mFooterView == null ?  new DefaultFooterView(mContext) : mFooterView;
+            return new FooterViewHolder(mFooterView);
         } else {
             return super.onCreateViewHolder(parent, viewType);
         }
@@ -47,7 +50,7 @@ public abstract class HeaderFooterRecyclerAdapter<T> extends CommonRecyclerAdapt
 
     @Override
     public void onBindViewHolder(CommonRecyclerHolder holder, int position) {
-        if (position != 0 && position != getItemCount() - 1) {
+        if (position != 0 && position < getItemCount() - 2) {
             super.onBindViewHolder(holder, position);
         }
     }
@@ -55,6 +58,14 @@ public abstract class HeaderFooterRecyclerAdapter<T> extends CommonRecyclerAdapt
     @Override
     public int getItemCount() {
         return super.getItemCount() + 2;
+    }
+
+    public HeaderView getHeaderView() {
+        return mHeaderView;
+    }
+
+    public FooterView getFooterView() {
+        return mFooterView;
     }
 
     public void setHeaderView(HeaderView headerView) {
