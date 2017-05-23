@@ -34,7 +34,7 @@
             <TextView
                 android:id="@+id/categoryTitle"
                 android:text="标题"
-                android:textSize="18sp"
+                android:textSize="15sp"
                 android:textStyle="bold"
                 android:maxLines="2"
                 android:ellipsize="end"

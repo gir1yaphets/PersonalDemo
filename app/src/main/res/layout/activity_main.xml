@@ -1,15 +1,20 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:orientation="vertical"
     tools:context="com.example.copengxiaolue.personaldemo.MainActivity">
 
-    <com.example.copengxiaolue.personaldemo.util.recyclerView.RecyclerViewWrapperHeaderFooter
-        android:id="@+id/recyclerView"
+    <android.support.v4.view.ViewPager
+        android:id="@+id/viewPager"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
-    </com.example.copengxiaolue.personaldemo.util.recyclerView.RecyclerViewWrapperHeaderFooter>
+        android:layout_height="0dp"
+        android:layout_weight="1">
+    </android.support.v4.view.ViewPager>
 
-</RelativeLayout>
+    <include layout="@layout/bottom_bar_view"
+        android:id="@+id/bottombar">
+    </include>
+
+</LinearLayout>

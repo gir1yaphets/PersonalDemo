@@ -3,6 +3,7 @@ package com.example.copengxiaolue.personaldemo.util.recyclerView;
 import android.content.Context;
 import android.support.annotation.Nullable;
 import android.util.AttributeSet;
+import android.widget.TextView;
 
 import com.example.copengxiaolue.personaldemo.R;
 
@@ -11,6 +12,8 @@ import com.example.copengxiaolue.personaldemo.R;
  */
 
 public class DefaultHeaderView extends HeaderView {
+    private TextView mHeaderText;
+
     public DefaultHeaderView(Context context) {
         super(context);
     }
@@ -21,6 +24,11 @@ public class DefaultHeaderView extends HeaderView {
 
     public DefaultHeaderView(Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
+    }
+
+    @Override
+    protected void initView() {
+        mHeaderText = (TextView) findViewById(R.id.header_text);
     }
 
     @Override
@@ -35,16 +43,16 @@ public class DefaultHeaderView extends HeaderView {
 
     @Override
     protected void onPullingState() {
+        mHeaderText.setText("下拉刷新");
+    }
 
+    @Override
+    protected void onReadyState() {
+        mHeaderText.setText("松开刷新");
     }
 
     @Override
     protected void onRefreshingState() {
-
-    }
-
-    @Override
-    protected void onFinishState() {
-
+        mHeaderText.setText("正在刷新");
     }
 }

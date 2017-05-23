@@ -4,6 +4,8 @@ import android.content.Context;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.RecyclerView;
 import android.util.AttributeSet;
+import android.util.Log;
+import android.view.MotionEvent;
 
 import java.io.InvalidClassException;
 
@@ -15,6 +17,11 @@ public class RecyclerViewWrapperHeaderFooter extends RecyclerView {
     private HeaderFooterRecyclerAdapter mAdapter;
     private OnRefreshListener mListener;
 
+    private float mStartY;
+    private static final int REFRESH_THRESHOLD = 150;
+
+    private static final String TAG = "RecyclerViewWrapperHead";
+
     public RecyclerViewWrapperHeaderFooter(Context context) {
         super(context);
     }
@@ -25,6 +32,67 @@ public class RecyclerViewWrapperHeaderFooter extends RecyclerView {
 
     public RecyclerViewWrapperHeaderFooter(Context context, @Nullable AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
+    }
+
+    @Override
+    public boolean onInterceptTouchEvent(MotionEvent e) {
+        switch (e.getAction()) {
+            case MotionEvent.ACTION_DOWN:
+                break;
+            case MotionEvent.ACTION_MOVE:
+                break;
+            case MotionEvent.ACTION_UP:
+                break;
+        }
+
+        return super.onInterceptTouchEvent(e);
+    }
+
+    @Override
+    public boolean onTouchEvent(MotionEvent e) {
+        switch (e.getAction()) {
+            case MotionEvent.ACTION_DOWN:
+                mStartY = e.getY();
+                break;
+            case MotionEvent.ACTION_MOVE:
+                int distanceY = (int) (e.getY() - mStartY);
+                if (!canScrollVertically(-1)) {
+                    if (distanceY > 0) {
+                        doPulling(distanceY);
+                    }
+                    return true;
+                }
+                break;
+            case MotionEvent.ACTION_UP:
+                int finalDistanceY = (int) (e.getY() - mStartY);
+                doPullUp(finalDistanceY);
+                return true;
+        }
+
+        return super.onTouchEvent(e);
+    }
+
+    private void doPulling(int distanceY) {
+        mAdapter.getHeaderView().setHeaderViewHeight(distanceY);
+        Log.d(TAG, "doPulling() called with: distanceY = [" + distanceY + "]");
+        if (distanceY > REFRESH_THRESHOLD) {
+            mAdapter.getHeaderView().setHeaderState(HeaderView.HeaderState.READY);
+        } else {
+            mAdapter.getHeaderView().setHeaderState(HeaderView.HeaderState.PULLING);
+        }
+    }
+
+    private void doPullUp(int distanceY) {
+        if (distanceY > REFRESH_THRESHOLD) {
+            int headerHeight = mAdapter.getHeaderView().getLayoutParams().height;
+            Log.d(TAG, "doPullingFinish() called with: height = [" + headerHeight + "]");
+            mAdapter.getHeaderView().setHeaderViewHeight(headerHeight);
+            if (mListener != null) {
+                mListener.onRefresh();
+            }
+        } else {
+            mAdapter.getHeaderView().setHeaderState(HeaderView.HeaderState.HIND);
+        }
     }
 
     @Override
@@ -58,6 +126,10 @@ public class RecyclerViewWrapperHeaderFooter extends RecyclerView {
 
     public void loadFinish() {
         mAdapter.getFooterView().setFooterState(FooterView.FootState.READY);
+    }
+
+    public void refreshFinish() {
+        mAdapter.getHeaderView().setHeaderState(HeaderView.HeaderState.HIND);
     }
 
     public void setOnRefreshListener(OnRefreshListener l) {

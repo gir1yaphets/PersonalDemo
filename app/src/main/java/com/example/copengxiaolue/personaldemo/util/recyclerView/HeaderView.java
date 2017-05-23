@@ -19,8 +19,8 @@ public abstract class HeaderView extends RelativeLayout {
     public enum HeaderState {
         HIND,
         PULLING,
+        READY,
         REFRESHING,
-        FINISH
     }
 
     public HeaderView(Context context) {
@@ -42,16 +42,18 @@ public abstract class HeaderView extends RelativeLayout {
         View.inflate(getContext(), getHeaderLayoutResId(), this);
         mRootView = (RelativeLayout) findViewById(R.id.rootHeaderView);
         setHeaderState(HeaderState.HIND);
+        initView();
     }
 
     public void setHeaderViewHeight(float height) {
         RelativeLayout.LayoutParams params = (LayoutParams) mRootView.getLayoutParams();
         params.height = (int) height;
         mRootView.setLayoutParams(params);
+        mRootView.setVisibility(VISIBLE);
         invalidate();
     }
 
-    private void setHeaderState(HeaderState state) {
+    public void setHeaderState(HeaderState state) {
         mState = state;
         refreshView();
     }
@@ -66,18 +68,20 @@ public abstract class HeaderView extends RelativeLayout {
                 mRootView.setVisibility(VISIBLE);
                 onPullingState();
                 break;
+            case READY:
+                mRootView.setVisibility(VISIBLE);
+                onReadyState();
+                break;
             case REFRESHING:
                 mRootView.setVisibility(VISIBLE);
                 onRefreshingState();
-                break;
-            case FINISH:
-                mRootView.setVisibility(VISIBLE);
-                onFinishState();
                 break;
             default:
                 break;
         }
     }
+
+    protected abstract void initView();
 
     protected abstract int getHeaderLayoutResId();
 
@@ -87,5 +91,5 @@ public abstract class HeaderView extends RelativeLayout {
 
     protected abstract void onRefreshingState();
 
-    protected abstract void onFinishState();
+    protected abstract void onReadyState();
 }
