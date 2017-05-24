@@ -15,7 +15,6 @@ import com.example.copengxiaolue.personaldemo.R;
 import com.example.copengxiaolue.personaldemo.adapter.CommonRecyclerAdapter;
 import com.example.copengxiaolue.personaldemo.model.GankResult;
 import com.example.copengxiaolue.personaldemo.module.CategoryHeaderFooterAdapter;
-import com.example.copengxiaolue.personaldemo.module.CategoryRecyclerAdapter;
 import com.example.copengxiaolue.personaldemo.net.NetWork;
 import com.example.copengxiaolue.personaldemo.util.recyclerView.HeaderFooterRecyclerAdapter;
 import com.example.copengxiaolue.personaldemo.util.recyclerView.RecyclerViewDivider;
@@ -41,7 +40,6 @@ public class CategoryFragment extends android.support.v4.app.Fragment {
     private static final String CATEGORY_NAME = "CATEGORY_NAME";
 
     private RecyclerViewWrapperHeaderFooter mWrapperRecyclerView;
-    private CategoryRecyclerAdapter mAdapter;
     private HeaderFooterRecyclerAdapter mHeaderFooterAdapter;
 
     private String mCurrentCategory;
@@ -68,14 +66,14 @@ public class CategoryFragment extends android.support.v4.app.Fragment {
         mCurrentCategory = getArguments().getString(CATEGORY_NAME);
 
         mWrapperRecyclerView = (RecyclerViewWrapperHeaderFooter) mView.findViewById(R.id.recyclerView);
-        mAdapter = new CategoryRecyclerAdapter(getActivity(), null);
-        mAdapter.setOnItemViewClickListener(new CommonRecyclerAdapter.OnItemViewClickListener() {
+        mHeaderFooterAdapter = new CategoryHeaderFooterAdapter(getActivity(), null);
+        mHeaderFooterAdapter.setOnItemViewClickListener(new CommonRecyclerAdapter.OnItemViewClickListener() {
             @Override
             public void onItemClick(int position) {
                 Toast.makeText(getActivity(), "position = " + position, Toast.LENGTH_SHORT).show();
             }
         });
-        mHeaderFooterAdapter = new CategoryHeaderFooterAdapter(getActivity(), null);
+
         mWrapperRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
         mWrapperRecyclerView.setAdapter(mHeaderFooterAdapter);
         mWrapperRecyclerView.addItemDecoration(new RecyclerViewDivider(getActivity(), LinearLayoutManager.HORIZONTAL));

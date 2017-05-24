@@ -7,6 +7,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -60,6 +61,9 @@ public abstract class CommonRecyclerAdapter<T> extends RecyclerView.Adapter<Comm
     }
 
     public void addData(List<T> data) {
+        if (mData == null) {
+            mData = new ArrayList<>();
+        }
         mData.addAll(data);
         notifyDataSetChanged();
     }

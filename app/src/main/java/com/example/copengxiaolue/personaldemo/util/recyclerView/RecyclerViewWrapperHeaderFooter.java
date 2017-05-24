@@ -18,6 +18,7 @@ public class RecyclerViewWrapperHeaderFooter extends RecyclerView {
     private OnRefreshListener mListener;
 
     private float mStartY;
+    private boolean mIsRefreshing;
     private static final int REFRESH_THRESHOLD = 150;
 
     private static final String TAG = "RecyclerViewWrapperHead";
@@ -38,6 +39,7 @@ public class RecyclerViewWrapperHeaderFooter extends RecyclerView {
     public boolean onInterceptTouchEvent(MotionEvent e) {
         switch (e.getAction()) {
             case MotionEvent.ACTION_DOWN:
+                mStartY = e.getY();
                 break;
             case MotionEvent.ACTION_MOVE:
                 break;
@@ -52,21 +54,35 @@ public class RecyclerViewWrapperHeaderFooter extends RecyclerView {
     public boolean onTouchEvent(MotionEvent e) {
         switch (e.getAction()) {
             case MotionEvent.ACTION_DOWN:
-                mStartY = e.getY();
+                /**
+                 * 因为子view的clickable为true，此处不会调用
+                 */
                 break;
             case MotionEvent.ACTION_MOVE:
+                if (mIsRefreshing) {
+                    return super.onTouchEvent(e);
+                }
+
                 int distanceY = (int) (e.getY() - mStartY);
-                if (!canScrollVertically(-1)) {
-                    if (distanceY > 0) {
+                if (distanceY > 0) {
+                    if (!canScrollVertically(-1)) {
                         doPulling(distanceY);
+                        return true;
                     }
-                    return true;
                 }
                 break;
             case MotionEvent.ACTION_UP:
-                int finalDistanceY = (int) (e.getY() - mStartY);
-                doPullUp(finalDistanceY);
-                return true;
+                /**
+                 *  如果在ACTION_DOWN的view内抬手，则此处viewgroup的ACTION_UP监听不到，
+                 *  子view只要是能够点击clickable为true，就会拦截ACTION_DOWN和ACTION_UP,父view不再监听onTouchEvent
+                 *  如果滑动离开了ACTION_DOWN的view再抬手，此处viewgroup的ACTION_UP可以监听到
+                 * */
+                if (!mIsRefreshing) {
+                    int finalDistanceY = (int) (e.getY() - mStartY);
+                    doPullUp(finalDistanceY);
+                }
+
+                break;
         }
 
         return super.onTouchEvent(e);
@@ -84,15 +100,24 @@ public class RecyclerViewWrapperHeaderFooter extends RecyclerView {
 
     private void doPullUp(int distanceY) {
         if (distanceY > REFRESH_THRESHOLD) {
-            int headerHeight = mAdapter.getHeaderView().getLayoutParams().height;
-            Log.d(TAG, "doPullingFinish() called with: height = [" + headerHeight + "]");
-            mAdapter.getHeaderView().setHeaderViewHeight(headerHeight);
-            if (mListener != null) {
-                mListener.onRefresh();
-            }
+            startRefresh();
         } else {
-            mAdapter.getHeaderView().setHeaderState(HeaderView.HeaderState.HIND);
+            autoScrollBack();
         }
+    }
+
+    private void startRefresh() {
+        mIsRefreshing = true;
+        int headerHeight = mAdapter.getHeaderView().getLayoutParams().height;
+        Log.d(TAG, "doPullingFinish() called with: height = [" + headerHeight + "]");
+        mAdapter.getHeaderView().setHeaderViewHeight(headerHeight);
+        if (mListener != null) {
+            mListener.onRefresh();
+        }
+    }
+
+    private void autoScrollBack() {
+        mAdapter.getHeaderView().setHeaderState(HeaderView.HeaderState.HIND);
     }
 
     @Override
@@ -129,6 +154,7 @@ public class RecyclerViewWrapperHeaderFooter extends RecyclerView {
     }
 
     public void refreshFinish() {
+        mIsRefreshing = false;
         mAdapter.getHeaderView().setHeaderState(HeaderView.HeaderState.HIND);
     }
 
