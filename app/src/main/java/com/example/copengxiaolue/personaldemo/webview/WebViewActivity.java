@@ -5,7 +5,8 @@ import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.view.View;
-import android.webkit.WebResourceRequest;
+import android.view.ViewGroup;
+import android.webkit.WebChromeClient;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
@@ -35,12 +36,31 @@ public class WebViewActivity extends Activity {
         mProgressBar = (ProgressBar) findViewById(R.id.web_progress);
         mTargetUrl = getIntent().getStringExtra(WEB_URL);
         mWebView.setWebViewClient(new MyWebViewClient());
+        mWebView.setWebChromeClient(new MyWebChrome());
         mWebView.loadUrl(mTargetUrl);
         WebSettings webSettings = mWebView.getSettings();
         webSettings.setJavaScriptEnabled(true);
+        webSettings.setLayoutAlgorithm(WebSettings.LayoutAlgorithm.SINGLE_COLUMN);
         webSettings.setLoadWithOverviewMode(true);
         webSettings.setAppCacheEnabled(true);
         webSettings.setSupportZoom(true);
+    }
+
+    @Override
+    public void onBackPressed() {
+        if (mWebView.canGoBack()) {
+            mWebView.goBack();
+        } else {
+            finish();
+        }
+    }
+
+    private class MyWebChrome extends WebChromeClient {
+        @Override
+        public void onProgressChanged(WebView view, int newProgress) {
+            mProgressBar.setVisibility(View.VISIBLE);
+            mProgressBar.setProgress(newProgress);
+        }
     }
 
     class MyWebViewClient extends WebViewClient {
@@ -56,10 +76,23 @@ public class WebViewActivity extends Activity {
             mWebView.setVisibility(View.VISIBLE);
         }
 
-        @Override
-        public boolean shouldOverrideUrlLoading(WebView view, WebResourceRequest request) {
-            view.loadUrl(mTargetUrl);
-            return true;
+//        @Override
+//        public boolean shouldOverrideUrlLoading(WebView view, WebResourceRequest request) {
+//            view.loadUrl(mTargetUrl);
+//            return true;
+//        }
+    }
+
+    @Override
+    protected void onDestroy() {
+        if (mWebView != null) {
+            mWebView.loadDataWithBaseURL(null, "", "text/html", "utf-8", null);
+            mWebView.clearHistory();
+
+            ((ViewGroup) mWebView.getParent()).removeView(mWebView);
+            mWebView.destroy();
+            mWebView = null;
         }
+        super.onDestroy();
     }
 }

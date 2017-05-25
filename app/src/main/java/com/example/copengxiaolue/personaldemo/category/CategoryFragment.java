@@ -1,5 +1,6 @@
 package com.example.copengxiaolue.personaldemo.category;
 
+import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.LinearLayoutManager;
@@ -12,6 +13,7 @@ import com.example.copengxiaolue.personaldemo.R;
 import com.example.copengxiaolue.personaldemo.adapter.CommonRecyclerAdapter;
 import com.example.copengxiaolue.personaldemo.model.GankResult;
 import com.example.copengxiaolue.personaldemo.module.CategoryHeaderFooterAdapter;
+import com.example.copengxiaolue.personaldemo.util.ContextUtil;
 import com.example.copengxiaolue.personaldemo.util.recyclerView.RecyclerViewDivider;
 import com.example.copengxiaolue.personaldemo.util.recyclerView.RecyclerViewWrapperHeaderFooter;
 
@@ -25,12 +27,15 @@ public class CategoryFragment extends android.support.v4.app.Fragment implements
 
     private static final String TAG = "CategoryFragment";
 
+    private Context mContext = ContextUtil.getContext();
     private View mView;
     private static final String CATEGORY_NAME = "CATEGORY_NAME";
     private String mCurrentCategory;
 
     private RecyclerViewWrapperHeaderFooter mWrapperRecyclerView;
     private CategoryHeaderFooterAdapter mCategoryAdapter;
+
+    CategoryContract.ICategoryPresenter mPresenter;
 
     public static CategoryFragment newInstance(String categoryName) {
         CategoryFragment fragment = new CategoryFragment();
@@ -39,8 +44,6 @@ public class CategoryFragment extends android.support.v4.app.Fragment implements
         fragment.setArguments(args);
         return fragment;
     }
-
-    CategoryContract.ICategoryPresenter mPresenter;
 
     @Nullable
     @Override
@@ -65,7 +68,7 @@ public class CategoryFragment extends android.support.v4.app.Fragment implements
             }
         });
 
-        mWrapperRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
+        mWrapperRecyclerView.setLayoutManager(new LinearLayoutManager(mContext));
         mWrapperRecyclerView.setAdapter(mCategoryAdapter);
         mWrapperRecyclerView.addItemDecoration(new RecyclerViewDivider(getActivity(), LinearLayoutManager.HORIZONTAL));
         mWrapperRecyclerView.setOnRefreshListener(new RecyclerViewWrapperHeaderFooter.OnRefreshListener() {
@@ -84,7 +87,7 @@ public class CategoryFragment extends android.support.v4.app.Fragment implements
     @Override
     public void getItemsFail() {
         mWrapperRecyclerView.loadFinish();
-        Toast.makeText(getActivity(), "网络连接失败", Toast.LENGTH_SHORT).show();
+        Toast.makeText(mContext, mContext.getResources().getString(R.string.network_fail), Toast.LENGTH_SHORT).show();
     }
 
     @Override

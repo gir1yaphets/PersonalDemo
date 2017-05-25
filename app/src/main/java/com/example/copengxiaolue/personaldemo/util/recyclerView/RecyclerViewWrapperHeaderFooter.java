@@ -76,7 +76,7 @@ public class RecyclerViewWrapperHeaderFooter extends RecyclerView {
             case MotionEvent.ACTION_UP:
                 /**
                  *  如果在ACTION_DOWN的view内抬手，则此处viewgroup的ACTION_UP监听不到，
-                 *  子view只要是能够点击clickable为true，就会拦截ACTION_DOWN和ACTION_UP,父view不再监听onTouchEvent
+                 *  子view只要是能够点击（即clickable为true），就会拦截ACTION_DOWN和ACTION_UP,父view不再监听onTouchEvent
                  *  如果滑动离开了ACTION_DOWN的view再抬手，此处viewgroup的ACTION_UP可以监听到
                  * */
                 if (!mIsRefreshing) {
