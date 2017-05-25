@@ -9,6 +9,8 @@ import android.view.MotionEvent;
 
 import java.io.InvalidClassException;
 
+import static com.example.copengxiaolue.personaldemo.util.recyclerView.HeaderView.HeaderState.REFRESHING;
+
 /**
  * Created by copengxiaolue on 2017/05/19.
  */
@@ -111,6 +113,7 @@ public class RecyclerViewWrapperHeaderFooter extends RecyclerView {
         int headerHeight = mAdapter.getHeaderView().getLayoutParams().height;
         Log.d(TAG, "doPullingFinish() called with: height = [" + headerHeight + "]");
         mAdapter.getHeaderView().setHeaderViewHeight(headerHeight);
+        mAdapter.getHeaderView().setHeaderState(REFRESHING);
         if (mListener != null) {
             mListener.onRefresh();
         }

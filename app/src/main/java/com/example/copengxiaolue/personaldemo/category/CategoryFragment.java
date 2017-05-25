@@ -1,5 +1,6 @@
 package com.example.copengxiaolue.personaldemo.category;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.HandlerThread;
@@ -16,9 +17,9 @@ import com.example.copengxiaolue.personaldemo.adapter.CommonRecyclerAdapter;
 import com.example.copengxiaolue.personaldemo.model.GankResult;
 import com.example.copengxiaolue.personaldemo.module.CategoryHeaderFooterAdapter;
 import com.example.copengxiaolue.personaldemo.net.NetWork;
-import com.example.copengxiaolue.personaldemo.util.recyclerView.HeaderFooterRecyclerAdapter;
 import com.example.copengxiaolue.personaldemo.util.recyclerView.RecyclerViewDivider;
 import com.example.copengxiaolue.personaldemo.util.recyclerView.RecyclerViewWrapperHeaderFooter;
+import com.example.copengxiaolue.personaldemo.webview.WebViewActivity;
 
 import java.util.List;
 
@@ -40,7 +41,7 @@ public class CategoryFragment extends android.support.v4.app.Fragment {
     private static final String CATEGORY_NAME = "CATEGORY_NAME";
 
     private RecyclerViewWrapperHeaderFooter mWrapperRecyclerView;
-    private HeaderFooterRecyclerAdapter mHeaderFooterAdapter;
+    private CategoryHeaderFooterAdapter mCategoryAdapter;
 
     private String mCurrentCategory;
     private int mCurrentPage = 0;
@@ -66,16 +67,19 @@ public class CategoryFragment extends android.support.v4.app.Fragment {
         mCurrentCategory = getArguments().getString(CATEGORY_NAME);
 
         mWrapperRecyclerView = (RecyclerViewWrapperHeaderFooter) mView.findViewById(R.id.recyclerView);
-        mHeaderFooterAdapter = new CategoryHeaderFooterAdapter(getActivity(), null);
-        mHeaderFooterAdapter.setOnItemViewClickListener(new CommonRecyclerAdapter.OnItemViewClickListener() {
+        mCategoryAdapter = new CategoryHeaderFooterAdapter(getActivity(), null);
+        mCategoryAdapter.setOnItemViewClickListener(new CommonRecyclerAdapter.OnItemViewClickListener() {
             @Override
             public void onItemClick(int position) {
-                Toast.makeText(getActivity(), "position = " + position, Toast.LENGTH_SHORT).show();
+                String url = mCategoryAdapter.getData().get(position).url;
+                Intent intent = new Intent(getActivity(), WebViewActivity.class);
+                intent.putExtra(WebViewActivity.WEB_URL, url);
+                getActivity().startActivity(intent);
             }
         });
 
         mWrapperRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
-        mWrapperRecyclerView.setAdapter(mHeaderFooterAdapter);
+        mWrapperRecyclerView.setAdapter(mCategoryAdapter);
         mWrapperRecyclerView.addItemDecoration(new RecyclerViewDivider(getActivity(), LinearLayoutManager.HORIZONTAL));
         mWrapperRecyclerView.setOnRefreshListener(new RecyclerViewWrapperHeaderFooter.OnRefreshListener() {
             @Override
@@ -119,7 +123,7 @@ public class CategoryFragment extends android.support.v4.app.Fragment {
                             public void onNext(@NonNull GankResult gankResult) {
                                 if (!gankResult.isError()) {
                                     List<GankResult.ResultBean> data = gankResult.getResults();
-                                    mHeaderFooterAdapter.addData(data);
+                                    mCategoryAdapter.addData(data);
                                     mWrapperRecyclerView.loadFinish();
                                     mCurrentPage += 1;
                                 }
@@ -127,7 +131,8 @@ public class CategoryFragment extends android.support.v4.app.Fragment {
 
                             @Override
                             public void onError(@NonNull Throwable e) {
-
+                                mWrapperRecyclerView.loadFinish();
+                                Toast.makeText(getActivity(), "网络连接失败", Toast.LENGTH_SHORT).show();
                             }
 
                             @Override
@@ -137,34 +142,5 @@ public class CategoryFragment extends android.support.v4.app.Fragment {
                         });
             }
         });
-
-        NetWork.getGankApi().getGankResult(mCurrentCategory, 10, mCurrentPage)
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Observer<GankResult>() {
-                    @Override
-                    public void onSubscribe(@NonNull Disposable d) {
-
-                    }
-
-                    @Override
-                    public void onNext(@NonNull GankResult gankResult) {
-                        if (!gankResult.isError()) {
-                            List<GankResult.ResultBean> data = gankResult.getResults();
-                            mHeaderFooterAdapter.setData(data);
-                            mCurrentPage += 1;
-                        }
-                    }
-
-                    @Override
-                    public void onError(@NonNull Throwable e) {
-
-                    }
-
-                    @Override
-                    public void onComplete() {
-
-                    }
-                });
     }
 }

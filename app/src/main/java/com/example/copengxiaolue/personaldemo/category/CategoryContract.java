@@ -5,11 +5,15 @@ package com.example.copengxiaolue.personaldemo.category;
  */
 
 public interface CategoryContract {
-    public interface ICategoryPresenter {
+    interface ICategoryPresenter {
+        void startCategoryRefresh();
 
+        void startCategoryLoadMore();
     }
 
-    public interface ICategoryView {
+    interface ICategoryView {
+        void getCategoryItemsFail();
 
+        void getCategoryItemsSuccess();
     }
 }

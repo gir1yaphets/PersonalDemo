@@ -35,7 +35,6 @@
                 android:id="@+id/categoryTitle"
                 android:text="标题"
                 android:textSize="15sp"
-                android:textStyle="bold"
                 android:maxLines="2"
                 android:ellipsize="end"
                 android:layout_width="match_parent"
@@ -50,12 +49,14 @@
                     android:id="@+id/categoryWho"
                     android:text="咕咚"
                     android:layout_alignParentLeft="true"
+                    android:textColor="@color/category_text2"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content" />
 
                 <TextView
                     android:id="@+id/categorySource"
                     android:text="Android"
+                    android:textColor="@color/category_text2"
                     android:layout_centerInParent="true"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content" />
@@ -63,6 +64,7 @@
                 <TextView
                     android:id="@+id/categoryPublish"
                     android:text="2017-04-10"
+                    android:textColor="@color/category_text2"
                     android:layout_alignParentRight="true"
                     android:layout_alignParentEnd="true"
                     android:layout_width="wrap_content"
