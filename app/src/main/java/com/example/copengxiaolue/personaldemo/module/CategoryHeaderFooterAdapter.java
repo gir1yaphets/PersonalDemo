@@ -30,7 +30,7 @@ public class CategoryHeaderFooterAdapter extends HeaderFooterRecyclerAdapter<Gan
     protected void convertView(CommonRecyclerHolder holder, GankResult.ResultBean data) {
         ImageView categoryImage = (ImageView) holder.getViewById(R.id.categoryImage);
 
-        if (data.images != null) {
+        if (data.images != null && data.images.size() != 0) {
             Glide.with(mContext)
                     .load(data.images.get(0))
                     .placeholder(R.mipmap.image_default)

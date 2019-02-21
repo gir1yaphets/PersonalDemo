@@ -59,6 +59,7 @@ public class RecyclerViewWrapperHeaderFooter extends RecyclerView {
                 /**
                  * 因为子view的clickable为true，此处不会调用
                  */
+                Log.d(TAG, "onTouchEvent: ");
                 break;
             case MotionEvent.ACTION_MOVE:
                 if (mIsRefreshing) {
@@ -145,7 +146,7 @@ public class RecyclerViewWrapperHeaderFooter extends RecyclerView {
             mAdapter = (HeaderFooterRecyclerAdapter) adapter;
         } else {
             try {
-                throw new InvalidClassException("使用的adpter不是HeaderFooterRecyclerAdapter子类");
+                throw new InvalidClassException("使用的adapter不是HeaderFooterRecyclerAdapter子类");
             } catch (InvalidClassException e) {
                 e.printStackTrace();
             }

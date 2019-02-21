@@ -95,6 +95,7 @@ public class CategoryPresenter implements CategoryContract.ICategoryPresenter {
     public void openItemWebView(String url) {
         Intent intent = new Intent(ContextUtil.getContext(), WebViewActivity.class);
         intent.putExtra(WebViewActivity.WEB_URL, url);
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         ContextUtil.getContext().startActivity(intent);
     }
 }
